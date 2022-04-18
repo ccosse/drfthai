@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<meta charset="UTF-8"/>
+	<title>Vocabulizer</title>
+	<style>
+		th','td {text-align:center;}
+		.w3-cell:hover {background-color:#2196f3;color:white;}
+		.fs0 {font-size:0pt;}
+		.fs16 {font-size:16pt;}
+		.fs32 {font-size:32pt;}
+		.fs64 {font-size:64pt;}
+		.fs70 {font-size:70pt;}
+		body {background-color:antiquewhite;color:firebrick;}
+	</style>
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<script type="text/javascript" src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+<!--
+<div class="w3-container w3-center w3-margin w3-padding">
+	<div>
+		<div class="w3-row">
+			<div id="W1" class="w3-col s12" style="font-size:90pt;">-</div>
+		</div>
+		<div class="w3-row">
+			<div class="w3-btn w3-blue w3-xlarge w3-round w3-padding w3-margin" id="renderB">Next</div>
+		</div>
+	</div>
+</div>
+-->
+<div class="w3-container w3-center w3-margin w3-padding">
+	<div class="w3-row">
+
+		<div id="left_sidebar"	class="w3-col l2 w3-white w3-hide w3-show" style="height:93vh;overflow:auto;">
+			<center>
+			<table id='thai_col'></table>
+			</center>
+		</div>
+
+		<div id="main_content"	class="w3-col l8" style="background-color:#fafafa;height:93vh;overflow:auto;">
+			<div id="W1" class="w3-col fs70 s12">-</div>
+			<!--
+			<br>
+			<div class="w3-btn w3-blue w3-xlarge w3-round w3-padding w3-margin" id="renderB">Next</div>
+			-->
+		</div>
+
+		<div id="right_sidebar" class="w3-col l2 w3-white w3-hide w3-show" style="height:93vh;overflow:auto;">
+			<center>
+			<table id='vocab_col'></table>
+			</center>
+		</div>
+
+	</div>
+</div>
+
+<script>
+
+const lookup={
+	'ำ':{'name':'sara am','sound':'(am)'},
+	'ํ':{'name':'nikhahit','sound':'()'},
+	'์':{'name':'mai thanthakhat','sound':'()'},
+	'๋':{'name':'mai chattawa','sound':'()'},
+	'๊':{'name':'mai tri','sound':'()'},
+	'้':{'name':'mai tho','sound':'()'},
+	'่':{'name':'mai ek','sound':'()'},
+	'็':{'name':'mai taikhu','sound':'(e)'},
+	'ๆ':{'name':'maiyamok','sound':'(idk)'},
+	'ๅ':{'name':'lakkhangyao','sound':'(idk)'},
+	'ไ':{'name':'sara ai maimalai','sound':'(ai)'},
+	'ใ':{'name':'sara ai maimuan','sound':'(ai)'},
+	'โ':{'name':'sara o','sound':'(o)'},
+	'แ':{'name':'sara ae','sound':'(ae)'},
+	'เ':{'name':'sara e','sound':'(e)'},
+	'ฺ ':{'name':'pinthu','sound':'(idk)'},
+	'ู':{'name':'sara uu','sound':'(uu)'},
+	'ื':{'name':'sara uee','sound':'(uee)'},
+	'ึ':{'name':'sara ue','sound':'(ue)'},
+	'ิ':{'name':'sara i','sound':'(i)'},
+	'า':{'name':'sara aa','sound':'(aa)'},
+	'ั':{'name':'mai han-akat','sound':'(idk)'},
+	'ะ':{'name':'sara a','sound':'(a)'},
+	'ุ':{'name':'sara u','sound':'(u)'},
+	'า':{'name':'sara aa','sound':'(aa)'},
+	'ั':{'name':'mai han-akat','sound':'(a)'},
+	'ี':{'name':'sara ii','sound':'(ii)'},
+	'ก':{'name':'ko kai','sound':'(g,k)'},
+	'ข':{'name':'kho khai','sound':'(k,k)'},
+	'ฃ':{'name':'kho khuat','sound':'(k,-)'},
+	'ค':{'name':'kho khwai','sound':'(k,k)'},
+	'ฅ':{'name':'kho khon','sound':'(k,-)'},
+	'ฆ':{'name':'kho rakhang','sound':'(k,k)'},
+	'ง':{'name':'ngo ngu','sound':'(ng,ng)'},
+	'จ':{'name':'jo jaan','sound':'(j,t)'},
+	'ฉ':{'name':'cho ching','sound':'(ch,-)'},
+	'ช':{'name':'cho chang','sound':'(ch,t)'},
+	'ซ':{'name':'so so','sound':'(t,l)'},
+	'ฌ':{'name':'cho choe','sound':'(ch,-)'},
+	'ญ':{'name':'yo ying','sound':'(y,n)'},
+	'ฎ':{'name':'do chada','sound':'(d,t)'},
+	'ฏ':{'name':'to patak','sound':'(dt,t)'},
+	'ฐ':{'name':'tho than','sound':'(t,t)'},
+	'ฑ':{'name':'tho nangmontho','sound':'(t,t)'},
+	'ฒ':{'name':'tho phuthao','sound':'(t,t)'},
+	'ณ':{'name':'no nen','sound':'(n,n)'},
+	'ด':{'name':'do dek','sound':'(d,t)'},
+	'ต':{'name':'to tao','sound':'(dt,t)'},
+	'ถ':{'name':'tho thung','sound':'(t,t)'},
+	'ท':{'name':'tho thahan','sound':'(t,t)'},
+	'ธ':{'name':'tho thong','sound':'(t,t)'},
+	'น':{'name':'no nu','sound':'(n,n)'},
+	'บ':{'name':'bo baimai','sound':'(b,p)'},
+	'ป':{'name':'po pla','sound':'(bp,p)'},
+	'ผ':{'name':'pho phung','sound':'(p,-)'},
+	'ฝ':{'name':'fo fa','sound':'(f,-)'},
+	'พ':{'name':'pho phan','sound':'(p,p)'},
+	'ฟ':{'name':'fo fan','sound':'(f,p)'},
+	'ภ':{'name':'pho samphao','sound':'(p,p)'},
+	'ม':{'name':'mo ma','sound':'(m,m)'},
+	'ย':{'name':'yo yak','sound':'(y,-)'},
+	'ร':{'name':'ro rua','sound':'(r,n)'},
+	'ล':{'name':'lo ling','sound':'(l,n)'},
+	'ว':{'name':'wo waen','sound':'(w,-)'},
+	'ศ':{'name':'so sala','sound':'(s,t)'},
+	'ษ':{'name':'so rusi','sound':'(s,t)'},
+	'ส':{'name':'so sua','sound':'(s,t)'},
+	'ห':{'name':'ho hip','sound':'(h,-)'},
+	'ฬ':{'name':'lo chula','sound':'(l,n)'},
+	'อ':{'name':'o ang','sound':'(-,-)'},
+	'ฮ':{'name':'ho nokhuk','sound':'(h,-)'},
+}
+let vocab={}
+console.log('{{phrases}}');
+
+let pheme;
+{% for phrase in phrases %}
+	vocab['{{phrase.data.english}}']={};
+	vocab['{{phrase.data.english}}']['thai']='{{phrase.data.thai}}';
+	vocab['{{phrase.data.english}}']['english']='{{phrase.data.english}}';
+	vocab['{{phrase.data.english}}']['phonetic']=JSON.parse('{{phrase.data.phonetic}}'.replaceAll('&#x27;','"'));
+{% endfor %}
+//console.log(vocab);
+/*
+	'':{
+		'thai':'',
+		'english':'',
+		'phonetic':[
+			['',''],
+			['','']
+		]
+	},
+	'Example':{
+		'thai':'สวัสด',
+		'english':'hello',
+		'phonetic':[
+			['sa','ส'],//syllable #1
+			['was','วัส'],//syllable#2
+			['di','ดี'],//syllable#3
+		]
+	},
+*/
+
+let render = (key) =>{
+	if(!key){
+		const keys=Object.keys(vocab);
+		const kidx=parseInt(Math.random()*keys.length);
+		const key=keys[kidx];
+	}
+
+	let entry=vocab[key];
+	let ph=entry['phonetic'];
+
+	let html=entry['thai']+'<br>';
+
+	for(var pidx=0;pidx<ph.length;pidx++){
+		html+=ph[pidx][1]+' ';
+	}
+	html+='<center><table class="w3-centered">';
+	//
+	html+='<tr>';
+	for(var pidx=0;pidx<ph.length;pidx++){
+		var pheme=ph[pidx][1]
+		var spheme=pheme.split('')
+		//now create list of sound w/ mouseover unicode name
+		for(const sp of spheme){
+			try{
+				var rval=lookup[sp];
+				//console.log(sp+': '+rval.name+' '+rval.sound);
+				html+='<td class="fs16 w3-padding">'+rval.name+'</td>';
+			}
+			catch(e){html+='<td>(?)</td>'}
+		}
+	}
+	html+='</tr>';
+
+	html+='<tr>';
+	for(var pidx=0;pidx<ph.length;pidx++){
+		var pheme=ph[pidx][1]
+		var spheme=pheme.split('')
+		//now create list of sound w/ mouseover unicode name
+		for(const sp of spheme){
+			html+='<td>'+sp+'</td>';
+		}
+	}
+	html+='</tr>';
+
+	html+='<tr>';
+	for(var pidx=0;pidx<ph.length;pidx++){
+		var pheme=ph[pidx][1]
+		var spheme=pheme.split('')
+		//now create list of sound w/ mouseover unicode name
+		for(const sp of spheme){
+			try{
+				var rval=lookup[sp];
+				//console.log(sp+': '+rval.name+' '+rval.sound);
+				html+='<td class="fs32 w3-padding">'+rval.sound+'</td>';
+			}
+			catch(e){html+='<td>(?)</td>'}
+		}
+	}
+	html+='</tr>';
+
+	html+='</table></center>';
+	//
+	html+='<span class="fs64">';
+	for(var pidx=0;pidx<ph.length;pidx++){
+		html+=ph[pidx][0]+' ';
+	}
+	html+='</span>';
+	html+='<span class="fs0"><br></span>';
+
+	html+='<span class="fs64">'+entry['english']+'</span>';
+	d3.select("#W1").html(html);
+}
+
+d3.select("#renderB")
+	.on('click',function(){render();})
+
+const keys=Object.keys(vocab);
+
+for(const key of keys.sort()){
+	d3.select("#vocab_col")
+		.append("tr")
+		.append("td")
+		.append("a")
+		.style("text-decoration","none")
+		.attr("href","#")
+		.attr("class","fs16")
+		.html(key)
+		.on('click',function(){
+			render(key);
+		});
+	//
+	d3.select("#thai_col")
+		.append("tr")
+		.append("td")
+		.append("a")
+		.style("text-decoration","none")
+		.attr("href","#")
+		.attr("class","fs16")
+		.html(vocab[key].thai)
+		.on('click',function(){
+			render(key);
+		});
+
+}
+
+try{render('hello');}
+catch(e){}
+
+</script>
+
+</body>
+</html>
